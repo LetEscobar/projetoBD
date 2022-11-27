@@ -2,9 +2,10 @@ public class User {
     private int id;
     private String username;
     private String password;
-    private int status; //0 = inativo e 1 = ativo
+    private int status; // 0 = inativo e 1 = ativo
     private double token;
 
+    // -------------- Getters and setters --------------
     public int getId() {
         return this.id;
     }

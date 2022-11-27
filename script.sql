@@ -13,3 +13,5 @@ describe TB_USER;
 
 -- derrubando a tabela
 drop table tb_user;
+
+-- CREATE TABLE `aulabd`.`teste` ();
