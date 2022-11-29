@@ -1,6 +1,9 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository {
     // repositório para concentrar todas as operações de banco de dados
@@ -15,31 +18,87 @@ public class UserRepository {
     private Connection conn = null;
 
     public UserRepository() {
-        // evitar tratar exceptiondentro do construtor
+        // nunca fazer tratamento de excessoes dentro do construtor
         this.conn = ConnectionFactory.createConnection();
     }
 
-    // Métodos que sempre vão existir, e os nomes costumam ser um padrão:
+    // criar usuario
     public void save(User _user) {
-        String uSql = "INSERT INTO tb_user (username, password, status, token) VALUES (?, ?, ?, ?)";
+
+        String uSQL = "INSERT INTO tb_user (username, password, status, token) VALUES (?, ?, ?, ?)";
         try {
-            PreparedStatement ps = conn.prepareStatement(uSql);
+            PreparedStatement ps = conn.prepareStatement(uSQL);
             ps.setString(1, _user.getUsername());
             ps.setString(2, _user.getPassword());
             ps.setInt(3, _user.getStatus());
             ps.setDouble(4, _user.getToken());
 
-            // a função executeUpdate() é usada para: INSERT, UPDATE e DELETE
-            ps.executeUpdate();
+            ps.executeUpdate(); // INSERT, UPDATE e DELETE
 
-            System.out.println("INFO: Usuário cadastrado!");
+            System.out.println("Usuario Cadastrado!");
 
         } catch (SQLException e) {
-            System.out.println("Erro: Não foi possível inserir o usuário!");
+            System.out.println("Error: Nao foi possivel inserir o usuario");
         }
+
     }
 
-    public void selectAll() {
+    public User getOne(int id) {
+        String sql = "SELECT * FROM tb_user WHERE id = ?";
+        User u = new User();
+
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                u.setId(rs.getInt("id"));
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: Nao foi possivel inserir o usuario");
+        }
+
+        return u;
+    }
+
+    public List<User> selectAll() {
+        String sql = "SELECT * FROM tb_user";
+
+        List<User> users = new ArrayList<User>();
+
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id"));
+                u.setUsername(rs.getString("username"));
+                u.setPassword(rs.getString("password"));
+                u.setStatus(rs.getInt("status"));
+                u.setToken(rs.getDouble("token"));
+
+                users.add(u);
+
+                // System.out.println(
+                // rs.getInt("id") + " - " +
+                // rs.getString("username") + "-" +
+                // rs.getString("password"));
+            }
+
+            // System.out.println(rs);
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erro: Nao foi possivel os usuarios");
+            e.printStackTrace();
+        }
+        return users;
     }
 
     public void update(User _user) {
